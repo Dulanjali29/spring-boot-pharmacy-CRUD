@@ -1,7 +1,9 @@
 package lk.pharmacyapp.pharmacyapp.controller;
 
+import lk.pharmacyapp.pharmacyapp.dto.CustomerDto;
 import lk.pharmacyapp.pharmacyapp.entity.Customer;
 import lk.pharmacyapp.pharmacyapp.repo.CustomerRepo;
+import lk.pharmacyapp.pharmacyapp.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,24 +15,26 @@ import java.util.List;
 @RequestMapping("/customer")
 public class CustomerController {
 
-    private final CustomerRepo customerRepo;
-
+private CustomerService customerService;
     @Autowired
-    public CustomerController(CustomerRepo customerRepo) {
-        this.customerRepo = customerRepo;
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
     }
 
-    @PostMapping
-    public ResponseEntity saveCustomer(@RequestBody Customer customer) {
-        Customer save = customerRepo.save(customer);
 
-    return  new ResponseEntity<>(save, HttpStatus.CREATED);
+
+
+    @PostMapping
+    public ResponseEntity saveCustomer(@RequestBody CustomerDto customer) {
+        Customer cus = customerService.saveCustomer(customer);
+
+    return  new ResponseEntity<>(cus, HttpStatus.CREATED);
     }
 
     @GetMapping
     public  ResponseEntity <List<Customer>>getCustomer() {
-        List<Customer> all = customerRepo.findAll();
-        return  new ResponseEntity<>(all,HttpStatus.OK);
+        List<Customer> allCustomers = customerService.getAllCustomer();
+        return  new ResponseEntity<>(allCustomers,HttpStatus.OK);
     }
 
     @PutMapping
@@ -38,9 +42,9 @@ public class CustomerController {
 
     }
 
-    @DeleteMapping
-    public void deleteCustomer() {
-
+    @DeleteMapping("/{customerId}")
+    public void deleteCustomer(@PathVariable Integer customerId) {
+    customerService.deleteCustomer(customerId);
     }
 
     @GetMapping("/search_customer")
